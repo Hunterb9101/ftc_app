@@ -23,6 +23,14 @@ import java.util.ArrayList;
 public class GlitterTemplate extends LinearOpMode {
     GlitterHardware r = new GlitterHardware();
 
+    AutonomousTextOption allianceColor = new AutonomousTextOption("Alliance Color", "blue", new String[] {"Blue", "Red"});
+    AutonomousTextOption strategy = new AutonomousTextOption("Strategy", "Do-It-All-Ramp", new String [] {"Do-It-All-Ramp", "Beacon-Ramp","Shooter-Angled","Shooter-Ramp","Blitz-Ramp"});
+    AutonomousIntOption waitStart = new AutonomousIntOption("Wait at Start", 0, 0, 20);
+    AutonomousBooleanOption park = new AutonomousBooleanOption("Park", true);
+
+    AutonomousOption [] autoOptions = {allianceColor,strategy,waitStart,park};
+    int currentOption = 0;
+
     public void initializeRobot(){
         /* Insert initialization code here */
     }
@@ -85,5 +93,69 @@ public class GlitterTemplate extends LinearOpMode {
             r.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             sleep(250);
         }
+    }
+
+    /////////////////////////////////////////
+    //            REQUIRED CODE            //
+    //         Smart Menu Functions        //
+    /////////////////////////////////////////
+    public void selectOptions() {
+        boolean aPressed = false;
+        boolean yPressed = false;
+        boolean bPressed = false;
+        boolean xPressed = false;
+        while (currentOption < autoOptions.length && !opModeIsActive()) {
+            showOptions();
+            if (gamepad1.a && !aPressed) {
+                currentOption = currentOption + 1;
+                aPressed = true;
+            } else {
+                aPressed = gamepad1.a;
+            }
+            if (gamepad1.y && !yPressed) {
+                currentOption = currentOption - 1;
+                yPressed = true;
+            } else {
+                yPressed = gamepad1.y;
+            }
+            if (gamepad1.b && !bPressed) {
+                autoOptions[currentOption].nextValue();
+                bPressed = true;
+            } else {
+                bPressed = gamepad1.b;
+            }
+            if (gamepad1.x && !xPressed) {
+                autoOptions[currentOption].previousValue();
+                xPressed = true;
+            } else {
+                xPressed = gamepad1.x;
+            }
+        }
+    }
+
+    private void showOptions() {
+        String str = "";
+        switch (autoOptions[currentOption].optionType) {
+            case STRING:
+                str = ((AutonomousTextOption) autoOptions[currentOption]).getValue();
+                break;
+            case INT:
+                str = Integer.toString(((AutonomousIntOption) autoOptions[currentOption]).getValue());
+                break;
+            case BOOLEAN:
+                str = String.valueOf(((AutonomousBooleanOption) autoOptions[currentOption]).getValue());
+                break;
+        }
+
+        if(currentOption == autoOptions.length-1){
+            telemetry.addLine("READY!");
+
+        }
+        else{
+            telemetry.addLine(autoOptions[currentOption].name);
+            telemetry.addLine("Current Option: " + str);
+            telemetry.update();
+        }
+        telemetry.update();
     }
 }
