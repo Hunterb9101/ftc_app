@@ -33,6 +33,7 @@ public class GlitterTemplate extends LinearOpMode {
 
     public void initializeRobot(){
         /* Insert initialization code here */
+        encoderDrive(.35,24,24); // Go forward 2 ft.
     }
 
     public void runOpMode() throws InterruptedException{
