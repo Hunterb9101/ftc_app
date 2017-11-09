@@ -19,7 +19,7 @@ package org.firstinspires.ftc.teamcode;
 @TeleOp(name = "GlitterCmds Write", group = "Linear Opmode")  // @Autonomous(...) is the other common choice
 //@Disabled
 public class GlitterWrite extends LinearOpMode {
-    GlitterHardware r = new GlitterHardware();
+    Hardware r = new Hardware();
 
     enum Dir{LEFTRIGHT,FORWARDBACK}
     Dir direction = null;  // Which way is the robot going to go?

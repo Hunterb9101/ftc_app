@@ -16,7 +16,7 @@ public class Hardware {
     public Servo leftGrabber = null; // Left Grabber on block mechanism
     public Servo rightGrabber = null; // Right Grabber on block mechanism
 
-    static final double ticksPerInch = (1237 * .5) / (3.0 * Math.PI); // (Ticks on Motor * Gear Reduction) / (Wheel Diameter * Pi)
+    static final double ticksPerInch = (1237) / (4.0 * Math.PI); // (Ticks on Motor * Gear Reduction) / (Wheel Diameter * Pi)
 
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
@@ -29,15 +29,15 @@ public class Hardware {
         hwMap = ahwMap;
 
         // Define and Initialize Motors
-        leftMotor   = hwMap.dcMotor.get("leftDrive");
-        rightMotor  = hwMap.dcMotor.get("rightDrive");
+        leftMotor   = hwMap.dcMotor.get("leftMotor");
+        rightMotor  = hwMap.dcMotor.get("rightMotor");
         lift = hwMap.dcMotor.get("lift");
 
         jewel = hwMap.servo.get("jewel");
         leftGrabber = hwMap.servo.get("leftGrabber");
         rightGrabber = hwMap.servo.get("rightGrabber");
 
-        leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
+        leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         lift.setDirection(DcMotor.Direction.FORWARD);
 
