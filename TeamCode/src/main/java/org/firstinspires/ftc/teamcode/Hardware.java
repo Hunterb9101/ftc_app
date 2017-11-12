@@ -47,10 +47,11 @@ public class Hardware {
         rightMotor.setPower(0);
         lift.setPower(0);
 
-        // Set servo positions
-        jewel.setPosition(.5);
-        leftGrabber.setPosition(.5);
-        rightGrabber.setPosition(.5);
+        //Grabber can pick up block w/ following settings
+        //leftGrabber.setPosition(.4);
+        //rightGrabber.setPosition(.6);
+        leftGrabber.setPosition(.85);
+        rightGrabber.setPosition(.15);
 
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.

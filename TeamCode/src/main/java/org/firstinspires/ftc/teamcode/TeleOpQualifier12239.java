@@ -3,14 +3,12 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
-
 /**
  * Created by Hunter on 11/3/2016.
  */
 
-@TeleOp(name="TeleOp Example",group="LinearOpMode")
-public class TeleOpExample extends LinearOpMode {
+@TeleOp(name="Qualifier TeleOp",group="LinearOpMode")
+public class TeleOpQualifier12239 extends LinearOpMode {
     Hardware r = new Hardware();
     public void runOpMode() throws InterruptedException {
         r.init(hardwareMap); // Initializes robot hardware
@@ -18,19 +16,30 @@ public class TeleOpExample extends LinearOpMode {
         boolean yPressed = false;
         while (opModeIsActive()) {
             // DRIVE FUNCTION //
-            double leftPower = powerAdjust(-gamepad1.left_stick_y, 1.0, .2);
-            double rightPower = powerAdjust(-gamepad1.right_stick_y, 1.0, .2);
+            double leftPower = powerAdjust(-gamepad1.left_stick_y, 1.0, .1);
+            double rightPower = powerAdjust(-gamepad1.right_stick_y, 1.0, .1);
             r.leftMotor.setPower(leftPower);
             r.rightMotor.setPower(rightPower);
 
-            if(gamepad1.a){
+
+            // Lift Mechanism
+            if(gamepad1.y){
                 r.lift.setPower(.5);
             }
-            else if(gamepad1.y){
-                r.lift.setPower(-.5);
+            else if(gamepad1.a){
+                r.lift.setPower(-.3);
             }
             else{
                 r.lift.setPower(0);
+            }
+
+            if(gamepad1.x){ //Close grabber
+                r.leftGrabber.setPosition(.4);
+                r.rightGrabber.setPosition(.6);
+            }
+            else if(gamepad1.b){ //Open Grabber
+                r.leftGrabber.setPosition(.8);
+                r.rightGrabber.setPosition(.2);
             }
         }
     }
