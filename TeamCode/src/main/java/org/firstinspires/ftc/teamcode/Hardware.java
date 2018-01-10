@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -16,8 +17,9 @@ public class Hardware {
     public Servo leftGrabber = null; // Left Grabber on block mechanism
     public Servo rightGrabber = null; // Right Grabber on block mechanism
 
-    static final double ticksPerInch = (1237) / (4.0 * Math.PI); // (Ticks on Motor * Gear Reduction) / (Wheel Diameter * Pi)
-
+    public ColorSensor colorSensor = null;
+    static final double ticksPerInch = (1237) / (8 * 4 * Math.PI); // (Ticks on Motor * Gear Reduction) / (Wheel Diameter * Pi)
+    int cnt = 0;
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
 
@@ -32,12 +34,17 @@ public class Hardware {
         leftMotor   = hwMap.dcMotor.get("leftMotor");
         rightMotor  = hwMap.dcMotor.get("rightMotor");
         lift = hwMap.dcMotor.get("lift");
+        colorSensor = hwMap.get(ColorSensor.class, "jewelcolorsensor");
 
         jewel = hwMap.servo.get("jewel");
         leftGrabber = hwMap.servo.get("leftGrabber");
         rightGrabber = hwMap.servo.get("rightGrabber");
 
+        /*
         leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
+        rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+        */
+        leftMotor.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         lift.setDirection(DcMotor.Direction.FORWARD);
 
@@ -46,13 +53,6 @@ public class Hardware {
         leftMotor.setPower(0);
         rightMotor.setPower(0);
         lift.setPower(0);
-
-        //Grabber can pick up block w/ following settings
-        //leftGrabber.setPosition(.4);
-        //rightGrabber.setPosition(.6);
-        leftGrabber.setPosition(.85);
-        rightGrabber.setPosition(.15);
-
         // Set all motors to run without encoders.
         // May want to use RUN_USING_ENCODERS if encoders are installed.
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -78,6 +78,25 @@ public class Hardware {
 
         period.reset(); // Reset the cycle clock for the next pass.
 
+    }
+
+    public void openGrabber() throws InterruptedException{
+        if(cnt == 1){
+            leftGrabber.setPosition(.9);
+            rightGrabber.setPosition(.1);
+        }
+        else{
+            leftGrabber.setPosition(.6);
+            rightGrabber.setPosition(.4);
+        }
+        cnt++;
+        Thread.sleep(250);
+    }
+
+    public void closeGrabber(){
+        leftGrabber.setPosition(.45);
+        rightGrabber.setPosition(.55);
+        cnt = 0;
     }
 }
 

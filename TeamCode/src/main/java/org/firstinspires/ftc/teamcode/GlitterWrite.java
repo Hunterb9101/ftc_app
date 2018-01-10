@@ -196,7 +196,10 @@ public class GlitterWrite extends LinearOpMode {
             r.rightMotor.setPower(Math.abs(speed));
 
             // keep looping while we are still active, and there is time left, and both motors are running.
-            while (opModeIsActive() && (r.leftMotor.isBusy() && r.rightMotor.isBusy())) {}
+            while (opModeIsActive() && (r.leftMotor.isBusy() && r.rightMotor.isBusy())) {
+                telemetry.addLine("Left: " + r.leftMotor.getCurrentPosition() + " in." + ", Right: " + r.rightMotor.getCurrentPosition() + " in." );
+                telemetry.update();
+            }
 
             // Stop all motion;
             r.leftMotor.setPower(0);

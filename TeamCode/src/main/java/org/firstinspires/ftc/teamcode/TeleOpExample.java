@@ -18,8 +18,8 @@ public class TeleOpExample extends LinearOpMode {
         boolean yPressed = false;
         while (opModeIsActive()) {
             // DRIVE FUNCTION //
-            double leftPower = powerAdjust(-gamepad1.left_stick_y, 1.0, .2);
-            double rightPower = powerAdjust(-gamepad1.right_stick_y, 1.0, .2);
+            double leftPower = powerAdjust(gamepad1.left_stick_y, 1.0, .2);
+            double rightPower = powerAdjust(gamepad1.right_stick_y, 1.0, .2);
             r.leftMotor.setPower(leftPower);
             r.rightMotor.setPower(rightPower);
 

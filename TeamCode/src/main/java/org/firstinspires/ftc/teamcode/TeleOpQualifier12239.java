@@ -13,33 +13,36 @@ public class TeleOpQualifier12239 extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         r.init(hardwareMap); // Initializes robot hardware
         waitForStart();
-        boolean yPressed = false;
         while (opModeIsActive()) {
             // DRIVE FUNCTION //
-            double leftPower = powerAdjust(-gamepad1.left_stick_y, 1.0, .1);
-            double rightPower = powerAdjust(-gamepad1.right_stick_y, 1.0, .1);
+            double leftPower = powerAdjust(-gamepad1.left_stick_y, .75, .1);
+            double rightPower = powerAdjust(-gamepad1.right_stick_y, .75, .1);
+            telemetry.addLine("Left Power: " + leftPower);
+            telemetry.addLine("RightPower: " + rightPower);
+            telemetry.update();
             r.leftMotor.setPower(leftPower);
             r.rightMotor.setPower(rightPower);
 
 
             // Lift Mechanism
-            if(gamepad1.y){
-                r.lift.setPower(.5);
+            if(gamepad2.y){
+                r.lift.setPower(.7);
             }
-            else if(gamepad1.a){
+            else if(gamepad2.a){
                 r.lift.setPower(-.3);
             }
             else{
                 r.lift.setPower(0);
             }
 
-            if(gamepad1.x){ //Close grabber
-                r.leftGrabber.setPosition(.4);
-                r.rightGrabber.setPosition(.6);
+            // Old grabber
+            // Closed: .4 .6
+            // Open: .8 .2
+            if(gamepad2.x){ //Close grabber
+                r.closeGrabber();
             }
-            else if(gamepad1.b){ //Open Grabber
-                r.leftGrabber.setPosition(.8);
-                r.rightGrabber.setPosition(.2);
+            else if(gamepad2.b){ //Open Grabber
+                r.openGrabber();
             }
         }
     }
@@ -60,7 +63,7 @@ public class TeleOpQualifier12239 extends LinearOpMode {
             {
                 vMotorPower= vMotorPower-iThreshHold;
             }
-            vMotorPower= Math.floor((vMotorPower*iPowerMax) / (1.0-iThreshHold));
+            vMotorPower= (vMotorPower*iPowerMax) / (1.0-iThreshHold);
         }
         return vMotorPower;
     }
