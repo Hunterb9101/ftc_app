@@ -14,11 +14,15 @@ public class Hardware {
     public DcMotor lift = null; // For the lift mechanism
 
     public Servo jewel = null; // For the jewel knock-off mechanism
-    public Servo leftGrabber = null; // Left Grabber on block mechanism
-    public Servo rightGrabber = null; // Right Grabber on block mechanism
+    public Servo leftTopGrabber = null; // Left Grabber on block mechanism
+    public Servo rightTopGrabber = null; // Right Grabber on block mechanism
+    public Servo leftBottomGrabber = null; // Left Grabber on block mechanism
+    public Servo rightBottomGrabber = null; // Right Grabber on block mechanism
 
     public ColorSensor colorSensor = null;
-    static final double ticksPerInch = (1237) / (8 * 4 * Math.PI); // (Ticks on Motor * Gear Reduction) / (Wheel Diameter * Pi)
+    //static final double ticksPerInch = (1237) / (8 * 4 * Math.PI); Old TPI
+    static final double ticksPerInch =  3*(1237) / (4 * Math.PI * 12); // (Ticks on Motor * Gear Reduction) / (Wheel Diameter * Pi)
+    static final double inchesPerDegrees = 2 * 19.2/12;
     int cnt = 0;
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
@@ -37,8 +41,10 @@ public class Hardware {
         colorSensor = hwMap.get(ColorSensor.class, "jewelcolorsensor");
 
         jewel = hwMap.servo.get("jewel");
-        leftGrabber = hwMap.servo.get("leftGrabber");
-        rightGrabber = hwMap.servo.get("rightGrabber");
+        leftTopGrabber = hwMap.servo.get("leftGrabber");
+        rightTopGrabber = hwMap.servo.get("rightGrabber");
+        leftBottomGrabber = hwMap.servo.get("leftBottomGrabber");
+        rightBottomGrabber = hwMap.servo.get("rightBottomGrabber");
 
         /*
         leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
@@ -82,20 +88,26 @@ public class Hardware {
 
     public void openGrabber() throws InterruptedException{
         if(cnt == 1){
-            leftGrabber.setPosition(.9);
-            rightGrabber.setPosition(.1);
+            leftTopGrabber.setPosition(.9);
+            rightTopGrabber.setPosition(.1);
+            leftBottomGrabber.setPosition(.9);
+            rightBottomGrabber.setPosition(.1);
         }
         else{
-            leftGrabber.setPosition(.6);
-            rightGrabber.setPosition(.4);
+            leftTopGrabber.setPosition(.6);
+            rightTopGrabber.setPosition(.4);
+            leftBottomGrabber.setPosition(.6);
+            rightBottomGrabber.setPosition(.4);
         }
         cnt++;
         Thread.sleep(250);
     }
 
     public void closeGrabber(){
-        leftGrabber.setPosition(.45);
-        rightGrabber.setPosition(.55);
+        leftTopGrabber.setPosition(.45);
+        rightTopGrabber.setPosition(.55);
+        leftBottomGrabber.setPosition(.45);
+        rightBottomGrabber.setPosition(.55);
         cnt = 0;
     }
 }

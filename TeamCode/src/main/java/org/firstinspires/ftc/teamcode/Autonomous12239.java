@@ -4,13 +4,21 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 /**
  * Created by Hunter on 7/30/2017.
  */
-@Autonomous(name="Glitter TEST",group="LinearOpMode")
-public class GlitterEncoderDriveTest extends LinearOpMode {
+@Autonomous(name="Autonomous 12239",group="LinearOpMode")
+public class Autonomous12239 extends LinearOpMode {
+    VuforiaLocalizer vuforia;
+    VuforiaTrackables relicTrackables;
+    VuforiaTrackable relicTemplate;
+
     Hardware r = new Hardware();
 
     AutonomousTextOption allianceColor = new AutonomousTextOption("Alliance Color", "blue", new String[] {"Blue", "Red"});
@@ -22,7 +30,19 @@ public class GlitterEncoderDriveTest extends LinearOpMode {
     int currentOption = 0;
 
     public void initializeRobot(){
-        /* Insert initialization code here */
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+
+        parameters.vuforiaLicenseKey = "AWSQJ+r/////AAAAGYcszN6Ft09NjOfMIOYU7GVYST+3LAn19fK2ZZXyGCiCCEriemUEUxfjxylCI513aUjKneAYvaOFV45erEYoTOvWK+AXlbPqOibtK6n+FSuMBCdCiSpBOsVkjOzE4hZOiImdyxfvY3MEi3/BRRwpO6SrLMFVxn2kC0RUA/ArQDy0QLVDtqVMd/A8wUi7WboDQXmpB5Nq0BykMq5jrcmnwjn9VRzBzw0rIBAY2spRFP70LOpEdOf8IfOSZLexhGHnfX8ejwedgKcyoJRBmU7DfqZYqj/7JFR+ufkXeApKmM/12pYRWexi8GlsXmTn8DRxhGDH0KZ3w6dQWWFfSVMuXyw0av5bS7Bk3Dnsmgsd4X8/";
+
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK; // Back camera has greater range
+        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+
+        relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        relicTemplate = relicTrackables.get(0);
+        relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
+
+
     }
 
     public void runOpMode() throws InterruptedException{
@@ -30,6 +50,8 @@ public class GlitterEncoderDriveTest extends LinearOpMode {
         initializeRobot();
         waitForStart();
 
+
+        // RESET ENCODERS //
         telemetry.addData("Status", "Resetting Encoders");
         telemetry.update();
 
@@ -40,14 +62,50 @@ public class GlitterEncoderDriveTest extends LinearOpMode {
         r.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         r.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-       // r.closeGrabber();
-        //r.lift.setPower(.7);
+        runEncoder(24,24,0,.325); // Go forward 1 ft.
+        Thread.sleep(1000);
+        runEncoder(12,12,0,-.325); // Go forward 1 ft.
+        /*
+        turn(90,.325);
+        Thread.sleep(1000);
+        turn(-90,.325);
+        */
+        /*
+        // VUFORIA //
+        relicTrackables.activate();
+
+        // vuMark will return UNKNOWN,LEFT,CENTER, or RIGHT.
+        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+
+        if (vuMark == RelicRecoveryVuMark.UNKNOWN) {
+            telemetry.addData("VuMark", "%s visible", vuMark);
+        }
+        else {
+            telemetry.addData("VuMark", "not visible");
+        }
+        telemetry.update();
+
+        // JEWEL Knockoff Code
+        r.jewel.setPosition(0);
+        telemetry.addLine("Blue: " + r.colorSensor.blue());
+        telemetry.addLine("Red: " + r.colorSensor.red());
+
+        // Grab block
+        r.closeGrabber();
+        r.lift.setPower(.7);
         Thread.sleep(250);
-       // r.lift.setPower(0);
-        runEncoder(24,24,0,.325); // Go forward 3 1/4 ft.
+        r.lift.setPower(0);
+
+        // Drive Forward (3ft for center, 2ft 4 in for Left, 3 ft 8 in for Right)
+        // Turn 90 degrees
+        // Forward 1 ft
+        // open grabber
+        // back up
+
+        runEncoder(82 + 19.2/2,82 + 19.2/2,0,.325); // Go forward 3 1/4 ft.
         r.openGrabber();
         Thread.sleep(1000);
-        runEncoder(12,12,0,.325);
+        runEncoder(19.2/3,19.2/3,0,-.325);
         //runEncoder(19.2,19.2,0,.325); // Go forward 1 ft.
 
 
@@ -149,7 +207,8 @@ public class GlitterEncoderDriveTest extends LinearOpMode {
     }
 
     private void turn(int distance,double speed){
-        distance*=r.ticksPerInch;
+        distance*=r.ticksPerInch * r.inchesPerDegrees;
+        int[] startPos = new int[]{r.leftMotor.getCurrentPosition(),r.rightMotor.getCurrentPosition()};
         if (!opModeIsActive()) {
             stop();
         }
@@ -170,7 +229,7 @@ public class GlitterEncoderDriveTest extends LinearOpMode {
             r.leftMotor.setPower(speed*ldirection);
 
             while (opModeIsActive() &&
-                    (checkDistance(distance, r.leftMotor, dir) && checkDistance(-distance, r.rightMotor, !dir)));
+                    (checkDistance(distance + startPos[0], r.leftMotor, dir) && checkDistance(-distance + startPos[1], r.rightMotor, !dir)));
             telemetry.addLine();
             // Stop all motion;
             r.rightMotor.setPower(0);
@@ -179,8 +238,10 @@ public class GlitterEncoderDriveTest extends LinearOpMode {
     }
     private void runEncoder(double Lback, double Rback, double timeoutS, //change to calc timeout
                             double speed) {
+        int[] startPos = new int[]{r.leftMotor.getCurrentPosition(),r.rightMotor.getCurrentPosition()};
         Lback*=r.ticksPerInch;
         Rback*=r.ticksPerInch;
+
         if (!opModeIsActive()) {
             stop();
         }
@@ -199,7 +260,7 @@ public class GlitterEncoderDriveTest extends LinearOpMode {
             r.leftMotor.setPower(speed*direction);
 
             while (opModeIsActive() &&
-                    (checkDistance(Lback, r.leftMotor, dir) && checkDistance(Rback, r.rightMotor, dir)));
+                    (checkDistance(Lback + startPos[0], r.leftMotor, dir) && checkDistance(Rback + startPos[1], r.rightMotor, dir)));
             telemetry.addLine("STOP");
             telemetry.update();
             // Stop all motion;
@@ -208,11 +269,10 @@ public class GlitterEncoderDriveTest extends LinearOpMode {
         }
     }
     private boolean checkDistance(double tickTarget, DcMotor motor, boolean forwards){
-        telemetry.addLine("" + (Math.abs(tickTarget) < Math.abs(motor.getCurrentPosition())));
         if(forwards)
-            return Math.abs(tickTarget) > Math.abs(motor.getCurrentPosition());
+            return tickTarget > motor.getCurrentPosition();
         else
-            return tickTarget < motor.getCurrentPosition();
+            return tickTarget > motor.getCurrentPosition();
     }
 
     private void showOptions() {
